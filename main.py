@@ -17,7 +17,7 @@ def newcommand():
   match command:
     case ".help" | ".h":
       print("=== Commands List ===")
-      print(".h -> This list")
+      print(".help -> This list")
       print(".key -> Set your default user key")
       print(".clanlist -> List of all clans")
       print(".joinclan -> Join a clan")
@@ -40,6 +40,7 @@ def newcommand():
           print("[ERROR] Empty input")
         else: 
           f.write(new)
+          USERKEY = new
           print("[SUCCESS] Default key has been changed")
     case ".clanslist" | ".clans" | ".cl":
       res = requests.get(f"{BASEURL}clan/available")
@@ -74,12 +75,13 @@ def newcommand():
         clanname = input("Clan Name: ")
         clandesc = input("Clan Description(?): ")
         params = {
+          "userKey": USERKEY,
           "tag": clantag,
           "name": clanname
         }
         if len(clandesc) > 0: 
           params['description'] = clandesc
-        res = requests.post(f"{BASEURL}clan/create?userKey={USERKEY}", params=params)
+        res = requests.post(f"{BASEURL}clan/create", params=params)
         print(params)
         try:
           res.raise_for_status()
@@ -96,7 +98,7 @@ def newcommand():
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
         clanid = input("Insert Clan ID: ")
-        res = requests.post(f"{BASEURL}clan/{clanid}/leave?userKey={USERKEY}")
+        res = requests.post(f"{BASEURL}clan/{clanid}/leave", params = {"userKey":USERKEY})
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
