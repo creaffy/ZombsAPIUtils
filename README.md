@@ -27,3 +27,10 @@ That's it. This is your user key.
 * **.polls** -> `/api/poll/available?userKey={0}`
 * **.leaderboards** -> `/api/leaderboard/live?userKey={0}&mode={1}&time={2}&category={3}`
 
+## Q&A
+**Q: What are the possible modes for .leaderboards?**</br>
+A: solo, duo, squad</br>
+**Q: What are the possible time ranges for .leaderboards?**</br>
+A: 24h, 7d, 14d, 1m, all *(all time)*</br>
+**Q: What are the possible categories for .leaderboards?**</br>
+A: kills, kills_per_round, rounds, time_alive, top10, winrate, wins</br>
