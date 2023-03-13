@@ -1,5 +1,5 @@
 # ZR-APIUtils
-ZomsbRoyale.io API utils
+ZomsbRoyale.io API utils. Not everything was tested (I'm too lazy) so please report any bugs in my Discord DMs (creaffy#1939). If you know any api endpoints that I didn't include in this project but you think are worth it, also DM me.
 
 ## Getting your user key
 ###
@@ -8,3 +8,22 @@ ZomsbRoyale.io API utils
 3. Run `console.log(game.options.userData.key);`
 
 That's it. This is your user key.
+
+## Commands
+* **.help** -> Commands list
+* **.key** -> Edit default userkey
+* **.clanlist** -> `/api/clan/available`
+* **.joinclan** -> `/api/clan/{0}/join?userKey={1}`
+* **.createclan** -> `/api/clan/create?userKey={0}&tag={1}&name={2}&description={3}`
+* **.leaveclan** -> `/api/clan/{0}/leave?userKey={1}`
+* **.data** -> `/api/user/{0}`
+* **.config** -> `/api/config`
+* **.clearsessions** -> `/api/user/{0}/clear-sessions`
+* **.changeusername** -> `/api/user/{0}/friend-code/update?name={1}`
+* **.shop** -> `/api/shop/available`
+* **.rewardtracks** -> `api/reward/tracks?userKey={0}`
+* **.rewards** -> `api/user/{0}/rewards`
+* **.quests** -> `api/quest/available?userKey={0}`
+* **.polls** -> `/api/poll/available?userKey={0}`
+* **.leaderboards** -> `/api/leaderboard/live?userKey={0}&mode={1}&time={2}&category={3}`
+
