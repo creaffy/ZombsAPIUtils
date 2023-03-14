@@ -1,282 +1,109 @@
-import requests, uuid, os
+from utils import *
 
-userKey = ""
 BASEURL = "https://www.zombsroyale.io/api/"
-try: open("key.txt", "x")
-except Exception: pass
-with open("key.txt", "r") as f:
-  userKey = f.read()
-
-def resfile(type, response):
-  filename = f"res_{type}_{uuid.uuid4()}.json"
-  with open(filename, "w") as f:
-    f.write(response)
-    return filename
+dotenv.load_dotenv(dotenv.find_dotenv())
+USERKEY = os.environ.get("USERKEY")
 
 def newcommand():
-  with open("key.txt", "r") as f:
-    userKey = f.read()
-  command = input("> ").lower()
-  match command:
-    case ".help" | ".h":
-      print("=== Commands List ===")
-      print(".help -> This list")
-      print(".key -> Set your default user key")
-      print(".clanlist -> List of all clans")
-      print(".joinclan -> Join a clan")
-      print(".createclan -> Create a clan")
-      print(".leaveclan -> Leave a clan")
-      print(".data -> Get your full userdata")
-      print(".config -> Some weird zr api endpoint idk")
-      print(".clearsessions -> Clear sessions (dangerous)")
-      print(".changeusername -> Change your username (charges 40 gems)")
-      print(".shop -> All cosmetics/packs in game")
-      print(".rewardtracks -> Your battlepass progress")
-      print(".rewards -> Some weird endpoint 2")
-      print(".quests -> Your available quests")
-      print(".polls -> Your available polls")
-      print(".leadboards -> Current leaderboard")
-    case ".key" | ".k":
-      new = input("Insert new user key: ")
-      with open("key.txt", "w") as f:
-        if new == None or new == "": 
-          print("[ERROR] Empty input")
-        else: 
-          f.write(new)
-          userKey = new
-          print("[SUCCESS] Default key has been changed")
-    case ".clanslist" | ".clans" | ".cl":
-      res = requests.get(f"{BASEURL}clan/available")
-      try:
-        res.raise_for_status()
-      except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-      else:
-          filename = resfile("clanavailable", res.text)
-          print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".joinclan" | ".jc" | ".join":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else: 
-        clanid = input("Insert Clan ID: ")
-        res = requests.post(f"{BASEURL}clan/{clanid}/join", params={"userKey":userKey})
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("clanjoin", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".createclan" | ".cc" | ".create":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        clantag = input("Clan Tag: ")
-        clanname = input("Clan Name: ")
-        clandesc = input("Clan Description(?): ")
-        params = {
-          "userKey": userKey,
-          "tag": clantag,
-          "name": clanname
-        }
-        if len(clandesc) > 0: 
-          params['description'] = clandesc
-        res = requests.post(f"{BASEURL}clan/create", params=params)
-        print(params)
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("clancreate", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".leaveclan" | ".leave" | ".lc":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        clanid = input("Insert Clan ID: ")
-        res = requests.post(f"{BASEURL}clan/{clanid}/leave", params = {"userKey":userKey})
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("clanleave", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".data" | ".userdata" | ".d":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        res = requests.get(f"{BASEURL}user/{userKey}")
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("user", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".config" | ".cfg":
-      res = requests.get(f"{BASEURL}config")
-      try:
-        res.raise_for_status()
-      except requests.exceptions.HTTPError as err:
-        print(f"[ERROR] Something went wrong!\n{err}")
-      else:
-        if res.json()['status'] == "error":
-          print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-        else:
-          filename = resfile("config", res.text)
-          print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".clearsessions" | ".cls":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        confirm = input("[WARNING] This will clear all your login sessions. Please write CONFIRM to confirm that you really want to do this")
-        if confirm == "CONFIRM":
-          res = requests.post(f"{BASEURL}user/{userKey}/clear-sessions")
-          try:
-            res.raise_for_status()
-          except requests.exceptions.HTTPError as err:
-            print(f"[ERROR] Something went wrong!\n{err}")
-          else:
-            if res.json()['status'] == "error":
-              print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-            else:
-              filename = resfile("clearsessions", res.text)
-              print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-        else:
-          print("[WARNING] Action cancelled.")
-    case ".changeusername" | ".changename" | ".username":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        confirm = input("[WARNING] This will clear all your login sessions. Please write CONFIRM to confirm that you really want to do this")
-        if confirm == "CONFIRM":
-          username = input("Insert new username: ")
-          res = requests.post(f"{BASEURL}user/{userKey}/friend-code/update", params = {"name": username})
-          try:
-            res.raise_for_status()
-          except requests.exceptions.HTTPError as err:
-            print(f"[ERROR] Something went wrong!\n{err}")
-          else:
-            if res.json()['status'] == "error":
-              print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-            else:
-              filename = resfile("friendcodeupdate", res.text)
-              print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-        else:
-          print("[WARNING] Action cancelled.")
-    case ".shop" | ".shopavailable":
-      res = requests.get(f"{BASEURL}shop/available")
-      try:
-        res.raise_for_status()
-      except requests.exceptions.HTTPError as err:
-        print(f"[ERROR] Something went wrong!\n{err}")
-      else:
-        if res.json()['status'] == "error":
-          print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-        else:
-          filename = resfile("shopavailable", res.text)
-          print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".rewardtracks":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        res = requests.get(f"{BASEURL}reward/tracks", params={"userKey":userKey})
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("rewardtracks", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".rewards":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        res = requests.get(f"{BASEURL}user/{userKey}/rewards")
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("rewards", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".quests":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        res = requests.get(f"{BASEURL}quest/available", params = {"userKey": userKey})
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("questsavailable", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".polls":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        res = requests.get(f"{BASEURL}poll/available", params = {"userKey": userKey})
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("pollsavailable", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-    case ".leaderboards" | ".leaderboard" |".lb":
-      if userKey is None or userKey == "":
-        print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
-      else:
-        lbmode = input("Mode: ")
-        lbtime = input("Time: ")
-        lbcat = input("Category: ")
-        params = {
-          "userKey": userKey,
-          "mode": lbmode,
-          "time": lbtime,
-          "category": lbcat
-        }
-        res = requests.get(f"{BASEURL}leaderboard/live", params = params)
-        try:
-          res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-          print(f"[ERROR] Something went wrong!\n{err}")
-        else:
-          if res.json()['status'] == "error":
-            print(f"[ERROR] Something went wrong!\n{res.json()['message']}")
-          else:
-            filename = resfile("leaderboardslive", res.text)
-            print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
-  newcommand()
-
+    command = input("> ").lower()
+    try:
+        match command:
+            case ".help" | ".h" | ".commands" | ".list":
+                print("=== Commands List ===")
+                print(".help -> This list")
+                print(".mykey -> Dump your default key in console")
+                print(".editkey -> Set your default user key")
+                print(".clanlist -> List of all clans")
+                print(".createclan -> Create a clan")
+                print(".joinclan -> Join a clan")
+                print(".leaveclan -> Leave a clan")
+                print(".userdata -> Get your full userdata")
+                print(".zrconfig -> Some weird zr api endpoint idk")
+                print(".clearsessions -> Clear sessions (dangerous)")
+                print(".changeusername -> Change your username (charges 40 gems)")
+                print(".shop -> All cosmetics/packs in game")
+                print(".rewardtracks -> Your battlepass progress")
+                print(".rewards -> Some weird endpoint 2")
+                print(".quests -> Your available quests")
+                print(".polls -> Your available polls")
+                print(".leadboard -> Current zr leaderboard")
+            case ".mykey":
+                print(f"Your current default userkey: {USERKEY}")
+                if not validatekey(USERKEY): 
+                    log.warning("YOUR DEFAULT USERKEY IS INVALID", True)
+            case ".editkey":
+                newkey = input("Insert new default userkey: ")
+                if validatekey:
+                    log.msg(f"Changed default userkey from {USERKEY} to {newkey}", True)
+                    dotenv.set_key(dotenv.find_dotenv(), "USERKEY", newkey)
+            case ".clanlist" | ".cl":
+                makerequest(mode="GET", url=f"{BASEURL}clan/available", type="clanavailable")
+            case ".createclan" | ".cc":
+                clanname = input("CLAN NAME: ").replace(" ", "%20")
+                clantag = input("CLAN TAG: ").replace(" ", "%20")
+                clandesc = input("CLAN DESCRIPTION (?): ").replace(" ", "%20")
+                nondefkey = input("NON-DEFAULT KEY (?): ")
+                params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY, "tag": clantag, "name": clanname }
+                if len(clandesc) > 0: params['description'] = clandesc
+                makerequest(mode="POST", url=f"{BASEURL}clan/create", type="clancreate", params=params)
+            case ".joinclan" | ".jc":
+                clanid = input("CLAN ID: ")
+                nondefkey = input("NON-DEFAULT KEY: ")
+                params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY }
+                makerequest(mode="POST", url=f"{BASEURL}clan/{clanid}/join", type="clanjoin", params=params)
+            case ".leaveclan" | ".lc":
+                clanid = input("CLAN ID: ")
+                nondefkey = input("NON-DEFAULT KEY: ")
+                params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY }
+                makerequest(mode="POST", url=f"{BASEURL}clan/{clanid}/leave", type="clanleave", params=params)
+            case ".userdata" | ".data":
+                nondefkey = input("NON-DEFAULT KEY: ")
+                makerequest(mode="GET", url=f"{BASEURL}user/{nondefkey if len(nondefkey) > 0 else USERKEY}", type="userdata")
+            case ".zrconfig":
+                makerequest(mode="GET", url=f"{BASEURL}config", type="config")
+            case ".clearsessions":
+                nondefkey = input("NON-DEFAULT KEY: ")
+                confirm = input("Are you sure that you want to do this? Write CONFIRM to confirm.")
+                if confirm == "CONFIRM": makerequest(mode="POST", url=f"{BASEURL}user/{nondefkey if len(nondefkey) > 0 else USERKEY}/clear-sessions", type="clearsessions")
+                else: log.msg("CANCELLED: Clear sessions", True)
+            case ".changeusername" | ".changename" | ".editusername" | ".editname":
+                newusername = input("NEW USERNAME: ")
+                nondefkey = input("NON-DEFAULT KEY: ")
+                confirm = input("Are you sure that you want to do this? Write CONFIRM to confirm.")
+                params = { "name": newusername }
+                if confirm == "CONFIRM": makerequest(mode="POST", url=f"{BASEURL}user/{nondefkey if len(nondefkey) > 0 else USERKEY}/friend-code/update", type="changeusername", params=params)
+                else: log.msg("CANCELLED: Friendcode update", True)
+            case ".shop":
+                makerequest(mode="GET", url=f"{BASEURL}shop/available", type="shopavailable")
+            case ".rewardtracks" | ".rewardstracks" | ".rewardtrack" | ".rewardstracks":
+                nondefkey = input("NON-DEFAULT KEY: ")
+                params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY }
+                makerequest(mode="GET", url=f"{BASEURL}reward/tracks", type="rewardtracks", params=params)
+            case ".rewards" | ".reward":
+                nondefkey = input("NON-DEFAULT KEY: ")
+                makerequest(mode="GET", url=f"{BASEURL}user/{nondefkey if len(nondefkey) > 0 else USERKEY}/rewards", type="rewards")
+            case ".quests" | ".quest":
+                nondefkey = input("NON-DEFAULT KEY: ")
+                params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY }
+                makerequest(mode="GET", url=f"{BASEURL}quest/available", type="quests", params=params)
+            case ".polls" | ".poll":
+                nondefkey = input("NON-DEFAULT KEY: ")
+                params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY }
+                makerequest(mode="GET", url=f"{BASEURL}poll/available", type="polls", params=params)
+            case ".leaderboard" | ".lb" | ".leaderboards":
+                lbmode = input("MODE: ")
+                lbtime = input("TIME RANGE: ")
+                lbcat = input("CATEGORY: ")
+                params = { "userKey": USERKEY, "mode": lbmode, "time": lbtime, "category": lbcat }
+                makerequest(mode="GET", url=f"{BASEURL}leaderboard/live", type="leaderboard", params=params)
+    except KeyboardInterrupt:
+        log.msg(f"CANCELLED: {command}", True)
+    newcommand()
+            
 print("ZombsRoyale.io API Utils")
 print("Run .help for a commands list")
-if userKey is None or userKey == "": print("[WARNING] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING OTHER COMMANDS!")
+log.msg("Validating your default userkey...", True)
+if not validatekey(USERKEY):
+    log.warning("YOUR CURRENT DEFAULT USERKEY IS INVALID", True)
+log.msg("Done!", True)
 newcommand()
