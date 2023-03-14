@@ -35,4 +35,6 @@ A: 24h, 7d, 14d, 1m, all *(all time)*</br>
 **Q: What are the possible categories for .leaderboards?**</br>
 A: kills, kills_per_round, rounds, time_alive, top10, winrate, wins</br>
 **Q: Why is your code so bad!!! Why is something not working!!!1111!!**</br>
-A: AAAAAAAA UHHHHHHHHH AAHHH report bugs on my discord or in issues
+A: AAAAAAAA UHHHHHHHHH AAHHH report bugs on my discord or in issues</br>
+**Q: What is NON-DEFAULT KEY?**</br>
+A: It's an optional feature that lets you to make an API request with a different userkey than your default one
