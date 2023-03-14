@@ -7,15 +7,15 @@ USERKEY = os.environ.get("USERKEY")
 
 class log:
     def msg(message:str, console:bool=False) -> None:
-      if console: print(f"\n[LOG] -> {message}")
+      if console: print(f"[LOG] -> {message}")
       with open("log.log", "a") as f:
         f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [LOG] -> {message}")
     def error(message:str, console:bool=False) -> None:
-      if console: print(f"\n[ERROR] -> {message}")
+      if console: print(f"[ERROR] -> {message}")
       with open("log.log", "a") as f:
         f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [ERROR] -> {message}")
     def warning(message:str, console:bool=False) -> None:
-      if console: print(f"\n[WARNING] -> {message}")
+      if console: print(f"[WARNING] -> {message}")
       with open("log.log", "a") as f:
         f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [WARNING] -> {message}")
            
