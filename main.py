@@ -1,10 +1,11 @@
 import requests, uuid, os
 
+userKey = ""
 BASEURL = "https://www.zombsroyale.io/api/"
 try: open("key.txt", "x")
 except Exception: pass
 with open("key.txt", "r") as f:
-  USERKEY = f.read()
+  userKey = f.read()
 
 def resfile(type, response):
   filename = f"res_{type}_{uuid.uuid4()}.json"
@@ -13,6 +14,8 @@ def resfile(type, response):
     return filename
 
 def newcommand():
+  with open("key.txt", "r") as f:
+    userKey = f.read()
   command = input("> ").lower()
   match command:
     case ".help" | ".h":
@@ -40,7 +43,7 @@ def newcommand():
           print("[ERROR] Empty input")
         else: 
           f.write(new)
-          USERKEY = new
+          userKey = new
           print("[SUCCESS] Default key has been changed")
     case ".clanslist" | ".clans" | ".cl":
       res = requests.get(f"{BASEURL}clan/available")
@@ -52,11 +55,11 @@ def newcommand():
           filename = resfile("clanavailable", res.text)
           print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".joinclan" | ".jc" | ".join":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else: 
         clanid = input("Insert Clan ID: ")
-        res = requests.post(f"{BASEURL}clan/{clanid}/join?userKey={USERKEY}")
+        res = requests.post(f"{BASEURL}clan/{clanid}/join", params={"userKey":userKey})
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -68,14 +71,14 @@ def newcommand():
             filename = resfile("clanjoin", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".createclan" | ".cc" | ".create":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
         clantag = input("Clan Tag: ")
         clanname = input("Clan Name: ")
         clandesc = input("Clan Description(?): ")
         params = {
-          "userKey": USERKEY,
+          "userKey": userKey,
           "tag": clantag,
           "name": clanname
         }
@@ -94,11 +97,11 @@ def newcommand():
             filename = resfile("clancreate", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".leaveclan" | ".leave" | ".lc":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
         clanid = input("Insert Clan ID: ")
-        res = requests.post(f"{BASEURL}clan/{clanid}/leave", params = {"userKey":USERKEY})
+        res = requests.post(f"{BASEURL}clan/{clanid}/leave", params = {"userKey":userKey})
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -110,10 +113,10 @@ def newcommand():
             filename = resfile("clanleave", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".data" | ".userdata" | ".d":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
-        res = requests.get(f"{BASEURL}user/{USERKEY}")
+        res = requests.get(f"{BASEURL}user/{userKey}")
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -137,12 +140,12 @@ def newcommand():
           filename = resfile("config", res.text)
           print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".clearsessions" | ".cls":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
         confirm = input("[WARNING] This will clear all your login sessions. Please write CONFIRM to confirm that you really want to do this")
         if confirm == "CONFIRM":
-          res = requests.post(f"{BASEURL}user/{USERKEY}/clear-sessions")
+          res = requests.post(f"{BASEURL}user/{userKey}/clear-sessions")
           try:
             res.raise_for_status()
           except requests.exceptions.HTTPError as err:
@@ -156,13 +159,13 @@ def newcommand():
         else:
           print("[WARNING] Action cancelled.")
     case ".changeusername" | ".changename" | ".username":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
         confirm = input("[WARNING] This will clear all your login sessions. Please write CONFIRM to confirm that you really want to do this")
         if confirm == "CONFIRM":
           username = input("Insert new username: ")
-          res = requests.post(f"{BASEURL}user/{USERKEY}/friend-code/update", params = {"name": username})
+          res = requests.post(f"{BASEURL}user/{userKey}/friend-code/update", params = {"name": username})
           try:
             res.raise_for_status()
           except requests.exceptions.HTTPError as err:
@@ -188,10 +191,10 @@ def newcommand():
           filename = resfile("shopavailable", res.text)
           print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".rewardtracks":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
-        res = requests.get(f"{BASEURL}reward/tracks", params={"userKey":USERKEY})
+        res = requests.get(f"{BASEURL}reward/tracks", params={"userKey":userKey})
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -203,10 +206,10 @@ def newcommand():
             filename = resfile("rewardtracks", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".rewards":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
-        res = requests.get(f"{BASEURL}user/{USERKEY}/rewards")
+        res = requests.get(f"{BASEURL}user/{userKey}/rewards")
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -218,10 +221,10 @@ def newcommand():
             filename = resfile("rewards", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".quests":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
-        res = requests.get(f"{BASEURL}quest/available", params = {"userKey": USERKEY})
+        res = requests.get(f"{BASEURL}quest/available", params = {"userKey": userKey})
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -233,10 +236,10 @@ def newcommand():
             filename = resfile("questsavailable", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".polls":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
-        res = requests.get(f"{BASEURL}poll/available", params = {"userKey": USERKEY})
+        res = requests.get(f"{BASEURL}poll/available", params = {"userKey": userKey})
         try:
           res.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -248,14 +251,14 @@ def newcommand():
             filename = resfile("pollsavailable", res.text)
             print(f"[SUCCESS] Response has been saved at\n{os.path.dirname(os.path.realpath(__file__))}\{filename}")
     case ".leaderboards" | ".leaderboard" |".lb":
-      if USERKEY is None or USERKEY == "":
+      if userKey is None or userKey == "":
         print("[ERROR] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING COMMANDS!")
       else:
         lbmode = input("Mode: ")
         lbtime = input("Time: ")
         lbcat = input("Category: ")
         params = {
-          "userKey": USERKEY,
+          "userKey": userKey,
           "mode": lbmode,
           "time": lbtime,
           "category": lbcat
@@ -275,5 +278,5 @@ def newcommand():
 
 print("ZombsRoyale.io API Utils")
 print("Run .help for a commands list")
-if USERKEY is None or USERKEY == "": print("[WARNING] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING OTHER COMMANDS!")
+if userKey is None or userKey == "": print("[WARNING] YOUR DEFAULT USERKEY IS EMPTY! SET IT UP BEFORE RUNNING OTHER COMMANDS!")
 newcommand()
