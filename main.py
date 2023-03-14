@@ -63,13 +63,13 @@ def newcommand():
                 makerequest(mode="GET", url=f"{BASEURL}config", type="config")
             case ".clearsessions":
                 nondefkey = input("NON-DEFAULT KEY: ")
-                confirm = input("Are you sure that you want to do this? Write CONFIRM to confirm.")
+                confirm = input("Are you sure that you want to do this? Write CONFIRM to confirm.\n")
                 if confirm == "CONFIRM": makerequest(mode="POST", url=f"{BASEURL}user/{nondefkey if len(nondefkey) > 0 else USERKEY}/clear-sessions", type="clearsessions")
                 else: log.msg("CANCELLED: Clear sessions", True)
             case ".changeusername" | ".changename" | ".editusername" | ".editname":
                 newusername = input("NEW USERNAME: ")
                 nondefkey = input("NON-DEFAULT KEY: ")
-                confirm = input("Are you sure that you want to do this? Write CONFIRM to confirm.")
+                confirm = input("Are you sure that you want to do this? Write CONFIRM to confirm.\n")
                 params = { "name": newusername }
                 if confirm == "CONFIRM": makerequest(mode="POST", url=f"{BASEURL}user/{nondefkey if len(nondefkey) > 0 else USERKEY}/friend-code/update", type="changeusername", params=params)
                 else: log.msg("CANCELLED: Friendcode update", True)
