@@ -11,7 +11,8 @@ That's it. This is your user key.
 
 ## Commands
 * **.help** -> Commands list
-* **.key** -> Edit default userkey
+* **.mykey** -> Current default userkey
+* **.editkey** -> Change your default userkey
 * **.clanlist** -> `/api/clan/available`
 * **.joinclan** -> `/api/clan/{0}/join?userKey={1}`
 * **.createclan** -> `/api/clan/create?userKey={0}&tag={1}&name={2}&description={3}`
