@@ -103,7 +103,6 @@ def newcommand():
 print("ZombsRoyale.io API Utils")
 print("Run .help for a commands list")
 log.msg("Validating your default userkey...", True)
-if not validatekey(USERKEY):
-    log.warning("YOUR CURRENT DEFAULT USERKEY IS INVALID", True)
-log.msg("Done!", True)
+if validatekey(USERKEY): log.msg("Done!", True)
+else: log.warning("YOUR CURRENT DEFAULT USERKEY IS INVALID", True)
 newcommand()
