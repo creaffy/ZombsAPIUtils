@@ -9,7 +9,7 @@ class log:
     def msg(message:str, console:bool=False) -> None:
       if console: print(f"[LOG] -> {message}")
       with open("log.log", "a") as f:
-        f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [LOG] -> {message}")
+        f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [INFO] -> {message}")
     def error(message:str, console:bool=False) -> None:
       if console: print(f"[ERROR] -> {message}")
       with open("log.log", "a") as f:
@@ -49,7 +49,7 @@ def makerequest(mode:str, url:str, type:str, params:dict={}) -> None:
            resobj = res.json()
            filename = resfile(type, res.text)
            if resobj['status'] == "success": log.msg(f"POST Request succeeded. Response saved as {filename}", True)
-           else: log.error(f"POST Request delivered but ZR API threw an error. Response saved as {filename}. Error message: {resobj['message']}", True)
+           else: log.error(f"POST Request delivered but ZR API threw an error. Response saved as {filename}", True)
     case "GET":
         try:
           res = requests.get(
@@ -62,4 +62,4 @@ def makerequest(mode:str, url:str, type:str, params:dict={}) -> None:
            resobj = res.json()
            filename = resfile(type, res.text)
            if resobj['status'] == "success": log.msg(f"GET Request succeeded. Response saved as {filename}", True)
-           else: log.error(f"GET Request delivered but ZR API threw an error. Response saved as {filename}. Error message: {resobj['message']}", True)
+           else: log.error(f"GET Request delivered but ZR API threw an error. Response saved as {filename}", True)
