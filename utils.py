@@ -1,23 +1,24 @@
-import uuid, dotenv, os, requests
+import uuid, os, requests, dotenv
 from datetime import datetime
 
 BASEURL = "https://www.zombsroyale.io/api/"
-dotenv.load_dotenv(dotenv.find_dotenv())
-USERKEY = os.environ.get("USERKEY")
+
+def getdefaultkey() -> str:
+  return dotenv.get_key(dotenv.find_dotenv(), "USERKEY")
 
 class log:
-    def msg(message:str, console:bool=False) -> None:
-      if console: print(f"[LOG] -> {message}")
-      with open("log.log", "a") as f:
-        f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [INFO] -> {message}")
-    def error(message:str, console:bool=False) -> None:
-      if console: print(f"[ERROR] -> {message}")
-      with open("log.log", "a") as f:
-        f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [ERROR] -> {message}")
-    def warning(message:str, console:bool=False) -> None:
-      if console: print(f"[WARNING] -> {message}")
-      with open("log.log", "a") as f:
-        f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [WARNING] -> {message}")
+  def msg(message:str, console:bool=False) -> None:
+    if console: print(f"[LOG] -> {message}")
+    with open("log.log", "a") as f:
+      f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [INFO] -> {message}")
+  def error(message:str, console:bool=False) -> None:
+    if console: print(f"[ERROR] -> {message}")
+    with open("log.log", "a") as f:
+      f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [ERROR] -> {message}")
+  def warning(message:str, console:bool=False) -> None:
+    if console: print(f"[WARNING] -> {message}")
+    with open("log.log", "a") as f:
+      f.write(f"\n{datetime.now().strftime('%H:%M:%S')} [WARNING] -> {message}")
            
 def resfile(type:str, response:str) -> str:
   filename = f"res_{type}_{uuid.uuid4()}.json"
@@ -26,14 +27,14 @@ def resfile(type:str, response:str) -> str:
     return filename
 
 def validatekey(userkey:str) -> bool:
-    res = requests.get(f"{BASEURL}user/{userkey}")
-    try:
-        res.raise_for_status()
-    except requests.exceptions.HTTPError as error:
-        log.error(error, True)
-    else:
-        if res.json()['status'] == "error": return False
-        else: return True
+  res = requests.get(f"{BASEURL}user/{userkey}")
+  try:
+    res.raise_for_status()
+  except requests.exceptions.HTTPError as error:
+    log.error(error, True)
+  else:
+    if res.json()['status'] == "error": return False
+    else: return True
 
 def makerequest(mode:str, url:str, type:str, params:dict={}) -> None:
   match mode.upper():
