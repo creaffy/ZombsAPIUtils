@@ -1,10 +1,8 @@
-from utils import *
-
-BASEURL = "https://www.zombsroyale.io/api/"
-dotenv.load_dotenv(dotenv.find_dotenv())
-USERKEY = os.environ.get("USERKEY")
+from utils import log, BASEURL, getdefaultkey, makerequest, validatekey 
+import dotenv
 
 def newcommand():
+    USERKEY = getdefaultkey() if not None else " "
     command = input("> ").lower()
     try:
         match command:
@@ -28,20 +26,22 @@ def newcommand():
                 print(".polls -> Your available polls")
                 print(".leadboard -> Current zr leaderboard")
             case ".mykey":
-                print(f"Your current default userkey: {USERKEY}")
+                print(f"Your current default USERKEY: {USERKEY}")
                 if not validatekey(USERKEY): 
                     log.warning("YOUR DEFAULT USERKEY IS INVALID", True)
             case ".editkey":
                 newkey = input("Insert new default userkey: ")
-                if validatekey:
-                    log.msg(f"Changed default userkey from {USERKEY} to {newkey}", True)
+                if validatekey(newkey):
+                    log.msg(f"Changed default userkey to {newkey}", True)
                     dotenv.set_key(dotenv.find_dotenv(), "USERKEY", newkey)
+                    USERKEY = newkey if not None else " "
+                else: log.error("Invalid userkey", True)
             case ".clanlist" | ".cl":
                 makerequest(mode="GET", url=f"{BASEURL}clan/available", type="clanavailable")
             case ".createclan" | ".cc":
-                clanname = input("CLAN NAME: ").replace(" ", "%20")
-                clantag = input("CLAN TAG: ").replace(" ", "%20")
-                clandesc = input("CLAN DESCRIPTION (?): ").replace(" ", "%20")
+                clanname = input("CLAN NAME: ")
+                clantag = input("CLAN TAG: ")
+                clandesc = input("CLAN DESCRIPTION (?): ")
                 nondefkey = input("NON-DEFAULT KEY (?): ")
                 params = { "userKey": nondefkey if len(nondefkey) > 0 else USERKEY, "tag": clantag, "name": clanname }
                 if len(clandesc) > 0: params['description'] = clandesc
@@ -103,6 +103,6 @@ def newcommand():
 print("ZombsRoyale.io API Utils")
 print("Run .help for a commands list")
 log.msg("Validating your default userkey...", True)
-if validatekey(USERKEY): log.msg("Done!", True)
+if validatekey(getdefaultkey()): log.msg("Done!", True)
 else: log.warning("YOUR CURRENT DEFAULT USERKEY IS INVALID", True)
 newcommand()
