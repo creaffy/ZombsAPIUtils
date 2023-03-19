@@ -30,7 +30,7 @@ That's it. This is your user key.
 
 ## Q&A
 **Q: What are the possible modes for .leaderboards?**</br>
-A: solo, duo, squad</br>
+A: solo, duo, squad, limited</br>
 **Q: What are the possible time ranges for .leaderboards?**</br>
 A: 24h, 7d, 14d, 1m, all *(all time)*</br>
 **Q: What are the possible categories for .leaderboards?**</br>
