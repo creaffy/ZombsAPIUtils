@@ -1,4 +1,4 @@
-# ZR-APIUtils
+# Zombs Royale API Utility
 ZomsbRoyale.io API utils. Not everything was tested (I'm too lazy) so please report any bugs in my Discord DMs (creaffy#1939). If you know any api endpoints that I didn't include in this project but you think are worth it, also DM me.
 
 ## Getting your user key
